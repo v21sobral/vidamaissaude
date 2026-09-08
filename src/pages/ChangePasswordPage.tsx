@@ -33,7 +33,7 @@ export default function ChangePasswordPage({ user, onChanged }: Props) {
           Defina sua nova senha
         </h1>
         <p className="text-sm text-slate-500 mb-6">
-          Este é seu primeiro acesso. Por segurança, defina uma senha antes de continuar.
+          Por segurança, defina uma nova senha antes de continuar.
         </p>
 
         <label className="text-xs font-medium text-slate-500 mb-1 block">Nova senha</label>

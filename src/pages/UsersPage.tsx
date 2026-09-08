@@ -22,9 +22,10 @@ export default function UsersPage({ user }: Props) {
   const { record } = useAudit();
   const { sysUsers: list, setSysUsers: setList } = useData();
   const [search, setSearch] = useState("");
-  const [modal, setModal] = useState<"add" | "edit" | null>(null);
+  const [modal, setModal] = useState<"add" | "edit" | "reset" | null>(null);
   const [selected, setSelected] = useState<SysUser | null>(null);
   const [form, setForm] = useState({ ...emptyForm });
+  const [resetPassword, setResetPassword] = useState({ password: "", confirm: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const filtered = list.filter(
@@ -45,6 +46,7 @@ export default function UsersPage({ user }: Props) {
 
   const openAdd = () => { setForm({ ...emptyForm }); setErrors({}); setSelected(null); setModal("add"); };
   const openEdit = (u: SysUser) => { setSelected(u); setForm({ name: u.name, email: u.email, role: u.role, active: u.active, password: "" }); setErrors({}); setModal("edit"); };
+  const openReset = (u: SysUser) => { setSelected(u); setResetPassword({ password: "", confirm: "" }); setErrors({}); setModal("reset"); };
 
   const handleSave = () => {
     const e = validate();
@@ -63,6 +65,21 @@ export default function UsersPage({ user }: Props) {
       ].filter(Boolean).join("; ") || "Nenhum dado alterado";
       record(user.name, user.role, "EDITOU", "Usuário", selected.name, detail);
     }
+    setModal(null);
+  };
+
+  const handleResetPassword = () => {
+    const nextErrors: Record<string, string> = {};
+    if (resetPassword.password.length < 6) nextErrors.password = "A senha deve ter pelo menos 6 caracteres.";
+    if (resetPassword.password !== resetPassword.confirm) nextErrors.confirm = "As senhas não coincidem.";
+    if (Object.keys(nextErrors).length) { setErrors(nextErrors); return; }
+    if (!selected) return;
+
+    setList(list.map((u) => u.id === selected.id
+      ? { ...u, password: resetPassword.password, mustChangePassword: true }
+      : u
+    ));
+    record(user.name, user.role, "EDITOU", "Usuário", selected.name, "Senha redefinida; troca obrigatória no próximo acesso");
     setModal(null);
   };
 
@@ -112,14 +129,45 @@ export default function UsersPage({ user }: Props) {
               </div>
             </div>
             <div className="mt-3 pt-3 border-t border-slate-50">
-              <button onClick={() => openEdit(u)} className="w-full text-xs font-medium text-slate-600 bg-slate-50 active:bg-slate-100 py-1.5 rounded-lg hover:brightness-95 transition-colors">Editar</button>
+              <div className="grid grid-cols-2 gap-2">
+                <button onClick={() => openEdit(u)} className="text-xs font-medium text-slate-600 bg-slate-50 active:bg-slate-100 py-1.5 rounded-lg hover:brightness-95 transition-colors">Editar</button>
+                <button onClick={() => openReset(u)} className="text-xs font-medium text-emerald-700 bg-emerald-50 active:bg-emerald-100 py-1.5 rounded-lg hover:brightness-95 transition-colors">Redefinir senha</button>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
       {modal && (
-        <Modal title={modal === "add" ? "Novo Usuário" : "Editar Usuário"} onClose={() => setModal(null)}>
+        <Modal title={modal === "add" ? "Novo Usuário" : modal === "edit" ? "Editar Usuário" : "Redefinir senha"} onClose={() => setModal(null)}>
+          {modal === "reset" ? (
+            <div className="space-y-3.5">
+              <p className="text-sm text-slate-500">
+                Defina uma senha provisória para <strong className="text-slate-700">{selected?.name}</strong>. A pessoa deverá criar uma nova senha no próximo acesso.
+              </p>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Senha provisória</label>
+                <input
+                  type="password"
+                  value={resetPassword.password}
+                  onChange={(e) => setResetPassword({ ...resetPassword, password: e.target.value })}
+                  placeholder="Mínimo 6 caracteres"
+                  className={`w-full px-3.5 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 ${errors.password ? "border-red-300" : "border-slate-200"}`}
+                />
+                {errors.password && <p className="text-xs text-red-500 mt-0.5">{errors.password}</p>}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Confirmar senha</label>
+                <input
+                  type="password"
+                  value={resetPassword.confirm}
+                  onChange={(e) => setResetPassword({ ...resetPassword, confirm: e.target.value })}
+                  className={`w-full px-3.5 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 ${errors.confirm ? "border-red-300" : "border-slate-200"}`}
+                />
+                {errors.confirm && <p className="text-xs text-red-500 mt-0.5">{errors.confirm}</p>}
+              </div>
+            </div>
+          ) : (
           <div className="space-y-3.5">
             {(["name", "email", ...(modal === "add" ? ["password"] : [])] as const).map((id: any) => {
               const config: Record<string, { label: string; type: string }> = {
@@ -154,9 +202,10 @@ export default function UsersPage({ user }: Props) {
               <span className="text-sm text-slate-600">Usuário ativo</span>
             </label>
           </div>
+          )}
           <div className="flex gap-3 mt-5">
             <button onClick={() => setModal(null)} className="flex-1 py-3 text-sm font-medium text-emerald-700 border border-emerald-200 hover:bg-emerald-50 rounded-full transition-colors">Cancelar</button>
-            <button onClick={handleSave} className="flex-1 py-3 text-sm font-semibold text-white bg-emerald-600 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all">Salvar</button>
+            <button onClick={modal === "reset" ? handleResetPassword : handleSave} className="flex-1 py-3 text-sm font-semibold text-white bg-emerald-600 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all">{modal === "reset" ? "Redefinir senha" : "Salvar"}</button>
           </div>
         </Modal>
       )}
