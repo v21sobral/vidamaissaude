@@ -10,7 +10,6 @@ import AppointmentsPage from "./pages/AppointmentsPage";
 import ExamsPage from "./pages/ExamsPage";
 import UsersPage from "./pages/UsersPage";
 import ProntuarioPage from "./pages/ProntuarioPage";
-import AuditPage from "./pages/AuditPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import Layout from "./components/Layout";
 import { AuditProvider } from "./context/AuditContext";
@@ -24,8 +23,7 @@ export type Page =
   | "appointments"
   | "exams"
   | "users"
-  | "prontuario"
-  | "audit";
+  | "prontuario";
 
 export interface AuthUser {
   name: string;
@@ -80,9 +78,6 @@ export default function App() {
       case "exams": return <ExamsPage user={user} />;
       case "users": return <UsersPage user={user} />;
       case "prontuario": return <ProntuarioPage user={user} />;
-      case "audit":
-        if (user.role !== "admin") return null;
-        return <AuditPage />;
       default: return null;
     }
   };
