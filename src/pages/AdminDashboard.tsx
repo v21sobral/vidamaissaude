@@ -32,7 +32,7 @@ export default function AdminDashboard() {
   return (
     <div className="px-4 py-5 md:px-8 md:py-6 space-y-5">
       <div>
-        <h1 className="text-lg font-semibold text-slate-800" style={{ fontFamily: "Outfit, sans-serif" }}>Dashboard</h1>
+        <h1 className="text-lg font-semibold text-slate-800" style={{ fontFamily: "Outfit, sans-serif" }}>Painel do usuário</h1>
         <p className="text-xs text-slate-400 mt-0.5">{new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</p>
       </div>
 

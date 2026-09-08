@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import type { AuthUser } from "../App";
 import { useData } from "../context/DataContext";
 
@@ -11,7 +11,7 @@ export default function Login({ onLogin }: Props) {
   const [error, setError] = useState("");
   const [showContact, setShowContact] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const normalEmail = email.trim().toLowerCase();
     const match = sysUsers.find((u) => u.email.toLowerCase() === normalEmail);
@@ -34,8 +34,9 @@ export default function Login({ onLogin }: Props) {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-slate-50 md:bg-gray-300 flex flex-col md:items-center md:justify-center" style={{ fontFamily: "'Inter', sans-serif" }}>
-      <div className="w-full max-w-md mx-auto md:rounded-3xl md:overflow-hidden md:shadow-2xl flex flex-col flex-1 md:flex-none">
+    <div className="relative min-h-[100dvh] bg-slate-50 md:bg-gray-300 flex flex-col md:items-center md:justify-center overflow-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <img src="/fundomaiscomplete.gif" alt="" aria-hidden="true" className="absolute top-0 bottom-0 h-full object-cover opacity-15" style={{ left: "0px", width: "calc(100% + 25px)" }} />
+      <div className="relative w-full max-w-md mx-auto md:rounded-3xl md:overflow-hidden md:shadow-2xl flex flex-col flex-1 md:flex-none">
         {/* Top hero */}
         <div className="bg-emerald-700 px-6 pt-14 pb-10 md:pt-10 md:pb-8">
           <div className="flex items-center gap-2.5 mb-6">
