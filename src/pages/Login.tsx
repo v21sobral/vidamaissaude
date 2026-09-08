@@ -35,7 +35,7 @@ export default function Login({ onLogin }: Props) {
 
   return (
     <div className="relative min-h-[100dvh] bg-slate-50 md:bg-gray-300 flex flex-col md:items-center md:justify-center overflow-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
-      <img src="/fundomais.jpg" alt="" aria-hidden="true" className="absolute top-0 bottom-0 h-full object-cover opacity-15" style={{ left: "-485px", width: "calc(100% + 35px)" }} />
+      <img src="/fundomaiscomplete.gif" alt="" aria-hidden="true" className="absolute top-0 bottom-0 h-full object-cover opacity-15" style={{ left: "0px", width: "calc(100% + 25px)" }} />
       <div className="relative w-full max-w-md mx-auto md:rounded-3xl md:overflow-hidden md:shadow-2xl flex flex-col flex-1 md:flex-none">
         {/* Top hero */}
         <div className="bg-emerald-700 px-6 pt-14 pb-10 md:pt-10 md:pb-8">
